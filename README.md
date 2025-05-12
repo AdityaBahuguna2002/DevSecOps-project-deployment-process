@@ -1,7 +1,7 @@
 # DevSecOps-project-deployment-process
 end to end DevSecOps project deployment process
 
-## Deploy a project of end-to-end with DevSecOps 
+## Deploy an end-to-end project with DevSecOps
 
 1. Log in to the AWS account & take an instance of t2.large 
 2. Connect it.
