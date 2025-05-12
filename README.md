@@ -105,7 +105,7 @@ docker ps
 2. there is form for pipeline:
     1. description: This is CI/CD pipeline for project 
     2. select - github project --> paste here project url from github
-    3. select - throttle buid
+    3. select - throttle build
     4. for automatic trigger polling - select --> Github hook trigger for GITScm polling
     5. now write pipeline with grovvy syntax:
     
