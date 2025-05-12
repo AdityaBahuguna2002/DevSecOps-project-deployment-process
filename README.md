@@ -103,11 +103,11 @@ docker ps
 1. in jenkins's dashboard go to :
     dashboard --> new item --> name: project_name, select - pipeline --> ok 
 2. there is form for pipeline:
-    i. description: This is CI/CD pipeline for project 
-    ii. select - github project --> paste here project url from github
-    iii. select - throttle buid
-    iv. for automatic trigger polling - select --> Github hook trigger for GITScm polling
-    v. now write pipeline with grovvy syntax:
+    1. description: This is CI/CD pipeline for project 
+    2. select - github project --> paste here project url from github
+    3. select - throttle buid
+    4. for automatic trigger polling - select --> Github hook trigger for GITScm polling
+    5. now write pipeline with grovvy syntax:
     
     ```bash
     pipeline{
