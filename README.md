@@ -79,7 +79,7 @@ docker ps
 ## 6. Integration of Jenkins and SonarQube by URL / Webhook 
 ## i. In SonarQube --
 1. in SonarQube go to:
-    Administration --> configuration --> webhooks --> create --> name: Jenkins , URL: http://jenkins_url_paste_here/sonarqube-webhook --> then create 
+    Administration --> configuration --> webhooks --> create --> name: Jenkins , URL: http://jenkins_url_paste_here/sonarqube-webhook/ --> then create 
 2. create token:
     security --> users --> create token tap on 3 dot --> name: jenkins-sonar, 30 days --> then generate --> copy token and save it  
 ## ii. In Jenkins now 
