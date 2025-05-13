@@ -27,7 +27,7 @@ docker ps
 sudo apt install docker-compose-v2 -y 
 docker compose version 
 ```
-4. Login Docker-hub in the server also: login & password | [docker-hub link](https://hub.docker.com) 
+4. Login Docker-hub in the server also: login & access-token | [docker-hub link](https://hub.docker.com) 
 ## 2. Jenkins's setup
 1. Now jenkins install. need Java to run Jenkins, then first install Java and then Install Jenkins's LTS version below link.
 2. [Jenkins installation](https://www.jenkins.io/doc/book/installing/linux/)
