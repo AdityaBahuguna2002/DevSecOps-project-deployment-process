@@ -194,8 +194,174 @@ docker ps
             }
         }
     }
-    ``` 
+    ```
 
+---
+
+## C.-Deployment by K8s and K8s runs with kind-cluster 
+## 1. KIND Cluster Setup Guide--
+
+## 1. Installing KIND and kubectl
+- Install KIND and kubectl using the provided script & create file kind_script.sh:
+```bash
+#!/bin/bash
+
+[ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.27.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+
+VERSION="v1.30.0"
+URL="https://dl.k8s.io/release/${VERSION}/bin/linux/amd64/kubectl"
+INSTALL_DIR="/usr/local/bin"
+
+curl -LO "$URL"
+chmod +x kubectl
+sudo mv kubectl $INSTALL_DIR/
+kubectl version --client
+
+rm -f kubectl
+rm -rf kind
+
+echo "kind & kubectl installation complete."
+```
+
+## 2. Setting Up the KIND Cluster
+- Create a kind-cluster-config.yaml file:
+
+```yaml
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+
+nodes:
+- role: control-plane
+  image: kindest/node:v1.31.2
+- role: worker
+  image: kindest/node:v1.31.2
+- role: worker
+  image: kindest/node:v1.31.2
+```
+---
+- Create the cluster using the configuration file:
+
+```bash
+kind create cluster --config=kind-cluster-config.yaml --name=ab-cluster
+```
+- Verify the cluster:
+
+```bash
+kubectl get nodes
+kubectl cluster-info
+```
+## 3. Accessing the Cluster
+- Use kubectl to interact with the cluster:
+```bash
+kubectl cluster-info
+```
+---
+## 4. Installing Argo CD
+
+- Create a namespace for Argo CD:
+  ```bash
+  kubectl create namespace argocd
+  ```
+
+- Apply the Argo CD manifest:
+  ```bash
+  kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+  ```
+
+- Check services in Argo CD namespace:
+  ```bash
+  kubectl get svc -n argocd
+  ```
+
+- Expose Argo CD server using NodePort:
+  ```bash
+  kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
+  ```
+
+- Forward ports to access Argo CD server:
+  ```bash
+  kubectl port-forward -n argocd service/argocd-server 8443:443 &
+  ```
+---
+## 5. Argo CD Initial Admin Password
+- Retrieve Argo CD admin password:
+  ```bash
+  kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
+  ```
+---  
+## 6. Delete Kind-Cluster
+```bash
+kind delete cluster
+```
+- Any specific cluster 
+```bash
+kind delete cluster --name=name_cluster 
+```
+---
+
+## D - Monitoring with Prometheus and Grafana by Helm
+- Install helm from [Helm Installation](https://helm.sh/docs/intro/install/) from helm script
+- check helm 
+```bash
+helm version
+```
+---
+- create a new namespace for the helm
+```bash
+kubectl create ns monitoring
+```
+- check namespaces
+```bash
+kubectl get ns
+```
+- need to istall helm chart for all helm's manifest file in github [prometheus Community helm chart](https://github.com/prometheus-community/helm-charts)
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+```
+- see list
+```bash
+helm repo list
+```
+- for latest repo from helm chart communty and get updated charts
+```bash
+helm repo update
+```
+- now install from helm to prometheus-stack, from prometheus community 
+```bash
+helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set grafana.service.nodePort=31000 --set prometheus.service.type=NodePort --set grafana.service.type=NodePort
+```  
+- now see pods in monitoring namespace
+```bash
+kubectl get pods -n monitoring
+```
+- now we need to expose grafana and prometheus,so get service first of monitoring: grafana, prometheus
+```bash
+kubectl get svc -n monitoring
+```
+- port expose of prometheus 
+```bash
+kubectl port-forward svc/prometheus-stack-kube-prom-prometheus -n monitoring 9090:9000 --address=0.0.0.0 &
+```
+- port expose of grafana
+```bash
+kubectl port-forward svc/prometheus-stack-grafana -n monitoring 3000:80 --address=0.0.0.0 &
+```
+- now edit inbound rule in the security group add port no: 9090, 3000 & access in the browser Prometheus, Grafana
+- Prometheus by: - public_ip:9090 :- prom dashboard --> status --> targets 
+- Grafana by: Public_ip:3000 
+- Garafana login, username: admin, passward: 
+- to get a password of grafana in the server
+```bash
+kubectl get secrets prometheus-stack-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode
+```
+- After logiing grafana goto: grafana dashboard home --> connections --> data sources --> build a dashboard --> add visualization --> select prometheus --> see all the metrics in grafana dashboard of server  
+
+- **if you want new dashaboard, then do:
+**go to the browser & search: grafana dashboard | grafana labs -->  tap on search & search: k8s cluster --> select dashboard --> copy id to clipboard. 
+** now go to grafana home --> dashboards --> new --> import --> paste id & load --> select data source --> prometheus --> import --> you can see new dashboard & their metrics, logs 
 
 
 
