@@ -27,6 +27,7 @@ docker ps
 sudo apt install docker-compose-v2 -y 
 docker compose version 
 ```
+4. Login Docker-hub in the server also: login & password | [dokcer-hub link](https://hub.docker.com) 
 ## 2. Jenkins's setup
 1. Now jenkins install. need Java to run Jenkins, then first install Java and then Install Jenkins's LTS version below link.
 2. [Jenkins installation](https://www.jenkins.io/doc/book/installing/linux/)
@@ -99,6 +100,10 @@ docker ps
     manage jenkins --> tool --> dependency-check installations --> add --> name: dc , select install automatically & add installer - select github.com - take version --> save it  
 
 ## B. Now create pipeline in jenkins
+- need to add credentials in jenkins credentials:
+  1. Github repo
+  2. Docker-hub
+  3. Sonarqube token 
 ## 1. create declarative pipeline here
 1. in jenkins's dashboard go to :
     dashboard --> new item --> name: project_name, select - pipeline --> ok 
