@@ -74,7 +74,7 @@ docker ps
     1. SonarQube Scanner,
     2. Sonar Quality Gates,
     3. OWASP dependency,
-    4. Docker,
+    4. Docker, Docker build pipeline,
     5. Pipeline view,
 
 ## 6. Integration of Jenkins and SonarQube by URL / Webhook 
@@ -203,11 +203,11 @@ docker ps
 
 ---
 
-## C.-Deployment by K8s and K8s runs with kind-cluster 
+## C.Deployment by K8s and K8s runs with kind-cluster 
 ## 1. KIND Cluster Setup Guide--
 
 ## 1. Installing KIND and kubectl
-- Install KIND and kubectl using the provided script & create file kind_script.sh:
+- Install KIND and kubectl using the provided script & create file - kind_script.sh:
 ```bash
 #!/bin/bash
 
@@ -264,14 +264,14 @@ kubectl cluster-info
 kubectl cluster-info
 ```
 ---
-## 4. Installing Argo CD
-
+## 4. Installing Argo CD (Argo Continuous Delivery is a declarative, GitOps-based continuous delivery tool for Kubernetes.)
+- here is Insatalling ArgoCD seperate to use  
 - Create a namespace for Argo CD:
   ```bash
   kubectl create namespace argocd
   ```
 
-- Apply the Argo CD manifest:
+- Apply the Argo CD manifest files to run ArgoCD in the server:
   ```bash
   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
   ```
@@ -281,7 +281,7 @@ kubectl cluster-info
   kubectl get svc -n argocd
   ```
 
-- Expose Argo CD server using NodePort:
+- Change Argo CD server ClusterIP to NodePort:
   ```bash
   kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
   ```
@@ -291,13 +291,14 @@ kubectl cluster-info
   kubectl port-forward -n argocd service/argocd-server 8443:443 &
   ```
 ---
-## 5. Argo CD Initial Admin Password
+## 5. Argo CD Initial Admin Password 
 - Retrieve Argo CD admin password:
   ```bash
   kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d && echo
   ```
 ---  
 ## 6. Delete Kind-Cluster
+- delete default cluster
 ```bash
 kind delete cluster
 ```
@@ -307,26 +308,26 @@ kind delete cluster --name=name_cluster
 ```
 ---
 
-## D - Monitoring with Prometheus and Grafana by Helm
+## D - Monitoring with Prometheus and Grafana by Helm (Package Manager of K8s - like apt for Ubuntu or yum for CentOS, but for Kubernetes clusters.)
 - Install helm from [Helm Installation](https://helm.sh/docs/intro/install/) from helm script
 - check helm 
 ```bash
 helm version
 ```
 ---
-- create a new namespace for the helm
+- create a new namespace for the helm to use seprately:
 ```bash
 kubectl create ns monitoring
 ```
-- check namespaces
+- check all namespaces in the cluster: 
 ```bash
 kubectl get ns
 ```
-- need to istall helm chart for all helm's manifest file in github [prometheus Community helm chart](https://github.com/prometheus-community/helm-charts)
+- need to install helm chart for all helm's manifest file in github repo to run Prometheus and Grafana- link of: [prometheus Community helm chart](https://github.com/prometheus-community/helm-charts)
 ```bash
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 ```
-- see list
+- see list in Helm
 ```bash
 helm repo list
 ```
@@ -334,10 +335,17 @@ helm repo list
 ```bash
 helm repo update
 ```
-- now install from helm to prometheus-stack, from prometheus community 
+- now install from helm of prometheus-stack-prom-prometheus & prometheus-stack-grafana, from prometheus community & set his port 30000 b/w 32000 & change it port ClusterIP to NodePort   
 ```bash
 helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set grafana.service.nodePort=31000 --set prometheus.service.type=NodePort --set grafana.service.type=NodePort
-```  
+```
+- for upgrade prometheus-stack if any changes happen
+```bash
+helm upgrade prometheus-stack prometheus-community/kube-prometheus-stack --n monitoring 
+```
+```bash
+helm upgrade prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set grafana.service.nodePort=31000 --set prometheus.service.type=NodePort --set grafana.service.type=NodePort
+``` 
 - now see pods in monitoring namespace
 ```bash
 kubectl get pods -n monitoring
