@@ -339,10 +339,7 @@ helm repo update
 ```bash
 helm install prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set grafana.service.nodePort=31000 --set prometheus.service.type=NodePort --set grafana.service.type=NodePort
 ```
-- for upgrade prometheus-stack if any changes happen
-```bash
-helm upgrade prometheus-stack prometheus-community/kube-prometheus-stack --n monitoring 
-```
+- To upgrade prometheus-stack if any changes happen
 ```bash
 helm upgrade prometheus-stack prometheus-community/kube-prometheus-stack --namespace monitoring --set prometheus.service.nodePort=30000 --set grafana.service.nodePort=31000 --set prometheus.service.type=NodePort --set grafana.service.type=NodePort
 ``` 
